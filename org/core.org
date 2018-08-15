@@ -13,3 +13,12 @@
 (setq locale-coding-system   'utf-8)   ; please
 (setq-default buffer-file-coding-system 'utf-8) ; with sugar on top
 #+END_SRC
+** Some sensible defaults
+*** Allow 2GB of memory
+#+BEGIN_SRC emacs-lisp
+(setq gc-cons-threshold 2000000000)
+#+END_SRC
+*** Treat camel case words as separate words in programming modes
+#+BEGIN_SRC emacs-lisp
+(add-hook 'prog-mode-hook 'subword-mode)
+#+END_SRC
