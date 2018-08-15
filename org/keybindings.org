@@ -1,0 +1,10 @@
+#+TITLE: Keybindings
+#+STARTUP: indent
+#+TODO: (a) | DISABLED(d)
+* Keybindings
+** Global key bindings
+#+BEGIN_SRC emacs-lisp
+(global-set-key [f5] 'revert-buffer)
+(global-set-key [f6] 'compile)
+#+END_SRC
+**  Mode dependent key bindings
