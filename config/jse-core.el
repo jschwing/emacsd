@@ -1,9 +1,12 @@
-#+TITLE: Emacs Core Configuration
-#+STARTUP: indent
-#+TODO: (a) | DISABLED(d)
-* Core
-** Encoding
-#+BEGIN_SRC emacs-lisp
+;; ============================================================
+;; Don't edit this file, edit 'org/core.org' instead ...
+;; Auto-generated at Thu Aug 16 2018-08-16 13:25:18
+;; ============================================================
+
+
+;; #####################################################################################
+(message "config • Encoding …")
+
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))     ; pretty
 (prefer-coding-system        'utf-8)   ; pretty
@@ -12,22 +15,14 @@
 (set-selection-coding-system 'utf-8)   ; perdy
 (setq locale-coding-system   'utf-8)   ; please
 (setq-default buffer-file-coding-system 'utf-8) ; with sugar on top
-#+END_SRC
-** Some sensible defaults
-Allow 2GB of memory
-#+BEGIN_SRC emacs-lisp
+
+
+;; #####################################################################################
+(message "config • Some sensible defaults …")
+
 (setq gc-cons-threshold 2000000000)
-#+END_SRC
-Treat camel case words as separate words in programming modes
-#+BEGIN_SRC emacs-lisp
 (add-hook 'prog-mode-hook 'subword-mode)
-#+END_SRC
-Transient mark mode
-#+BEGIN_SRC emacs-lisp
 (transient-mark-mode t)
-#+END_SRC
-Other sensible defaults
-#+BEGIN_SRC emacs-lisp
 (setq require-final-newline t)
 (setq inhibit-startup-message t)
 (setq initial-scratch-message nil)
@@ -40,4 +35,6 @@ Other sensible defaults
 (setq mouse-yank-at-point t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
-#+END_SRC
+
+(provide 'jse-core)
+;;; jse-core.el ends here

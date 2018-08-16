@@ -25,17 +25,25 @@
 ;;; Code:
 (setq user-init-file (or load-file-name (buffer-file-name)))
 (setq user-emacs-directory (file-name-directory user-init-file))
+(setq custom-file (concat user-emacs-directory "custom.el"))
 
-(defconst jsc-config-org-dir (concat user-emacs-directory "org" "/")
+(defconst jse-config-org-dir (concat user-emacs-directory "org" "/")
   "Location of config org files")
-(defconst jsc-config-el-dir (concat user-emacs-directory "config" "/")
+(defconst jse-config-el-dir (concat user-emacs-directory "config" "/")
   "Location of generated el files")
-(defconst jsc-config-files '(
+(defconst jse-config-files '(
                              core
                              keybindings
+                             ui
                              )
   "List of configuration file names that should be loaded.")
-(defvar jsc-init-el-start-time (current-time) "Time when init.el was started")
+
+(defconst jse-prefix "jse"
+  "Prefix used for all variables/functions. Stands for Julian Schwing Emacs")
+(defgroup jse-emacs nil "Customizations of my emacs configuration")
+
+(add-to-list 'load-path jse-config-el-dir)
+(defvar jse-init-el-start-time (current-time) "Time when init.el was started")
 
 ;;
 ;; Emacs core configuration
@@ -52,15 +60,19 @@ See help of `format-time-string' for possible replacements")
 Note the weekly scope of the command's precision.")
 
 (toggle-debug-on-error)
-(defun jsc-tangle-config-org (jscfn)
+(defun jse-get-file-name-for-config (config ext)
+  (cond ((string= ext ".el") (concat jse-config-el-dir jse-prefix "-" config ext))
+        ((string= ext ".org") (concat jse-config-org-dir config ext))))
+
+(defun jse-tangle-config-org (jsefn)
   "This function will write all source blocks from =<filename>.org= into =<filename>.el= that are ...
 - not marked as =tangle: no=
 - doesn't have the TODO state =DISABLED=
 - have a source-code of =emacs-lisp="
   (require 'org)
   (let* ((body-list ())
-         (output-file (concat jsc-config-el-dir jscfn ".el"))
-         (orgfile (concat jsc-config-org-dir jscfn ".org"))
+         (output-file (jse-get-file-name-for-config jsefn ".el"))
+         (orgfile (jse-get-file-name-for-config jsefn ".org"))
          (org-babel-default-header-args (org-babel-merge-params org-babel-default-header-args
                                                                 (list (cons :tangle output-file)))))
     (message "—————• Re-generating %s …" output-file)
@@ -94,42 +106,41 @@ Note the weekly scope of the command's precision.")
               ))))
       (with-temp-file output-file
         (insert ";; ============================================================\n")
-        (insert (concat ";; Don't edit this file, edit '" orgfile "' instead ...\n"))
+        (insert (concat ";; Don't edit this file, edit '" (file-relative-name orgfile user-emacs-directory) "' instead ...\n"))
         (insert ";; Auto-generated at " (format-time-string current-date-time-format (current-time)) "\n")
-        (insert ";; ============================================================\n\n")
-        (insert (apply 'concat (reverse body-list))))
+        (insert ";; ============================================================\n")
+        (insert (apply 'concat (reverse body-list)))
+        (insert (concat "\n(provide '" (file-name-base output-file) ")\n"))
+        (insert (concat ";;; " (file-name-nondirectory output-file) " ends here")))
       (message "—————• Wrote %s" output-file))))
 
 
-;; following lines are executed only when jsc-tangle-config-org-hook-func()
+;; following lines are executed only when jse-tangle-config-org-hook-func()
 ;; was not invoked when saving config.org which is the normal case:
-(dolist (jscf jsc-config-files)
-  (let* ((jscfn (symbol-name jscf))
-        (orgfile (concat jsc-config-org-dir jscfn ".org"))
-        (elfile (concat jsc-config-el-dir jscfn ".el"))
+(dolist (jsef jse-config-files)
+  (let* ((jsefn (symbol-name jsef))
+        (orgfile (jse-get-file-name-for-config jsefn ".org"))
+        (elfile (jse-get-file-name-for-config jsefn ".el"))
         (gc-cons-threshold most-positive-fixnum))
     (when (or (not (file-exists-p elfile))
               (file-newer-than-file-p orgfile elfile))
-      (jsc-tangle-config-org jscfn)
+      (message (concat "Looking at " orgfile "..."))
+      (jse-tangle-config-org jsefn)
       ;;(save-buffers-kill-emacs);; TEST: kill Emacs when config has been re-generated due to many issues when loading newly generated config.el
       )
-    (load-file elfile)))
+    (require (intern (file-name-base elfile)))))
 
 ;; when config.org is saved, re-generate config.el:
-(defun jsc-tangle-config-org-hook-func ()
-  (message "Hook run!")
+(defun jse-tangle-config-org-hook-func ()
   (message (file-name-directory buffer-file-name))
-  (message jsc-config-org-dir)
-  (when (string= (file-name-directory buffer-file-name) jsc-config-org-dir)
-    (jsc-tangle-config-org (file-name-base buffer-file-name))))
-(add-hook 'after-save-hook 'jsc-tangle-config-org-hook-func)
+  (when (string= (file-name-directory buffer-file-name) jse-config-org-dir)
+    (jse-tangle-config-org (file-name-base buffer-file-name))))
+(add-hook 'after-save-hook 'jse-tangle-config-org-hook-func)
 
+()
 
-(message "→★ loading init.el in %.2fs" (float-time (time-subtract (current-time) jsc-init-el-start-time)))
-
-
-
-
+(message "→★ loading init.el in %.2fs" (float-time (time-subtract (current-time) jse-init-el-start-time)))
 
 (provide 'init)
 ;;; init.el ends here
+
