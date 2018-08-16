@@ -1,6 +1,6 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/core.org' instead ...
-;; Auto-generated at Thu Aug 16 2018-08-16 13:25:18
+;; Auto-generated at Thu Aug 16 2018-08-16 22:41:19
 ;; ============================================================
 
 
@@ -14,6 +14,8 @@
 (set-keyboard-coding-system  'utf-8)   ; pretty
 (set-selection-coding-system 'utf-8)   ; perdy
 (setq locale-coding-system   'utf-8)   ; please
+(setq coding-system-for-read 'utf-8 )	; use utf-8 by default
+(setq coding-system-for-write 'utf-8 )
 (setq-default buffer-file-coding-system 'utf-8) ; with sugar on top
 
 
@@ -35,6 +37,13 @@
 (setq mouse-yank-at-point t)
 (menu-bar-mode -1)
 (tool-bar-mode -1)
+(setq delete-old-versions -1)		; delete excess backup versions silently
+(setq version-control t)		; use version control
+(setq vc-make-backup-files t)		; make backups file even when in version controlled dir
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name (concat user-emacs-directory "backups")))))
+(setq ring-bell-function 'ignore )	; silent bell when you make a mistake
+(setq sentence-end-double-space nil)	; sentence SHOULD end with only a point.
 
 (provide 'jse-core)
 ;;; jse-core.el ends here

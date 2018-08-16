@@ -290,3 +290,25 @@ Add customization option for font
   :type '(cons string (plist :key-type (choice (const :size) (const :weight) (const :style) (const :width)) :value-type sexp))
   :set 'jse-set-font)
 #+END_SRC
+** Themes
+TODO: Decide on packaging system
+#+BEGIN_SRC emacs-lisp
+(defun jse-install-or-load-package (pkg)
+  (unless (require pkg nil 'noerror)
+    (message "%s" pkg)
+    (package-install pkg)
+    (require pkg)))
+
+(defun jse-get-theme-package (theme)
+  (cond
+   (t (intern (concat theme "-theme")))))
+
+(defun jse-load-theme (theme)
+  "Load the theme with the theme name `theme`"
+  (let* ((theme-pkg (jse-get-theme-package theme)))
+    (unless (eq 'default theme)
+      (jse-install-or-load-package theme-pkg)
+      (load-theme theme t)
+      (redisplay))))
+(jse-load-theme "wombat")
+#+END_SRC
