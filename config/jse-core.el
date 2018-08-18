@@ -1,6 +1,6 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/core.org' instead ...
-;; Auto-generated at Thu Aug 16 2018-08-16 22:41:19
+;; Auto-generated at Fri Aug 17 2018-08-17 13:43:56
 ;; ============================================================
 
 
@@ -35,8 +35,6 @@
 (setq show-paren-delay 0.0)
 (setq-default fill-column 120)
 (setq mouse-yank-at-point t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
 (setq delete-old-versions -1)		; delete excess backup versions silently
 (setq version-control t)		; use version control
 (setq vc-make-backup-files t)		; make backups file even when in version controlled dir
@@ -44,6 +42,23 @@
       `(("." . ,(expand-file-name (concat user-emacs-directory "backups")))))
 (setq ring-bell-function 'ignore )	; silent bell when you make a mistake
 (setq sentence-end-double-space nil)	; sentence SHOULD end with only a point.
+
+
+;; #####################################################################################
+(message "config • Modes …")
+
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+(electric-pair-mode 1)
+(display-line-numbers-mode)
+
+
+;; #####################################################################################
+(message "config • Personal Information …")
+
+(setq user-full-name "Julian Schwing")
+(setq user-mail-address "julian.schwing@gmail.com")
 
 (provide 'jse-core)
 ;;; jse-core.el ends here

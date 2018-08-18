@@ -40,8 +40,6 @@ Other sensible defaults
 (setq show-paren-delay 0.0)
 (setq-default fill-column 120)
 (setq mouse-yank-at-point t)
-(menu-bar-mode -1)
-(tool-bar-mode -1)
 (setq delete-old-versions -1)		; delete excess backup versions silently
 (setq version-control t)		; use version control
 (setq vc-make-backup-files t)		; make backups file even when in version controlled dir
@@ -49,4 +47,24 @@ Other sensible defaults
       `(("." . ,(expand-file-name (concat user-emacs-directory "backups")))))
 (setq ring-bell-function 'ignore )	; silent bell when you make a mistake
 (setq sentence-end-double-space nil)	; sentence SHOULD end with only a point.
+#+END_SRC
+** Modes
+Disabled menu/tool/scrollbar
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode -1)
+(tool-bar-mode -1)
+(scroll-bar-mode -1)
+#+END_SRC
+Electric Pairs!
+#+BEGIN_SRC emacs-lisp
+(electric-pair-mode 1)
+#+END_SRC
+Use Emacs' native line numbering
+#+BEGIN_SRC emacs-lisp
+(display-line-numbers-mode)
+#+END_SRC
+** Personal Information
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Julian Schwing")
+(setq user-mail-address "julian.schwing@gmail.com")
 #+END_SRC

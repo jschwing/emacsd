@@ -1,6 +1,6 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/ui.org' instead ...
-;; Auto-generated at Thu Aug 16 2018-08-16 22:42:59
+;; Auto-generated at Fri Aug 17 2018-08-17 13:01:44
 ;; ============================================================
 
 
@@ -18,10 +18,10 @@
 (defun jse-set-font (symbol value)
   (jse-require-font value))
 (defcustom jse-display-font '("Source Code Pro for Powerline"
-                          :size 14
-                          :weight normal
-                          :width normal
-                          :style Regular)
+                              :size 14
+                              :weight normal
+                              :width normal
+                              :style Regular)
   "Font name and properties to be used"
   :group 'jse-emacs
   :type '(cons string (plist :key-type (choice (const :size) (const :weight) (const :style) (const :width)) :value-type sexp))
@@ -33,24 +33,61 @@
 
 (defun jse-install-or-load-package (pkg)
   (unless (require pkg nil 'noerror)
-    (message "%s" pkg)
-    (package-install pkg)
+    (message (concat "Installing " (symbol-name 'pkg) "...")
+             (straight-use-package pkg))
     (require pkg)))
 
 (defun jse-get-theme-package (theme)
   (cond
-   (t (intern (format "%S-theme" theme)))))
+   (t (intern (concat theme "-theme")))))
 
 (defun jse-load-theme (theme)
   "Load the theme with the theme name `theme`"
-  (let* ((theme-pkg (jse-get-theme-package theme)))
-    (unless (eq 'default theme)
-      (message theme-pkg)
-      (jse-install-or-load-package theme-pkg)
-      (load-theme theme t)
-      (redisplay)))  
-  )
-(jse-load-theme "wombat")
+  (let* ((theme-pkg (jse-get-theme-package theme))
+         (theme-symbol (intern theme)))
+    (unless (member theme-symbol (custom-available-themes))
+      (jse-install-or-load-package theme-pkg))
+    (load-theme theme-symbol t)
+    (redisplay)))
+
+(defun jse-cust-load-theme (symbol-name theme-name)
+  (jse-load-theme theme-name))
+
+(defcustom jse-theme "wombat"
+  "Theme name to be loaded at startup"
+  :group 'jse-emacs
+  :type 'string
+  :set 'jse-cust-load-theme)
+
+
+;; #####################################################################################
+(message "config • Packages …")
+
+(straight-use-package 'spaceline)
+(defun jse-init/spaceline()
+  (require 'spaceline-config)
+  (spaceline-spacemacs-theme)
+  (setq winum-auto-setup-mode-line nil))
+(add-to-list 'jse-pkg-init-funs #'jse-init/spaceline)
+(straight-use-package 'winum)
+(defun jse-init/winum()
+  (setq winum-keymap
+        (let ((map (make-sparse-keymap)))
+          (define-key map (kbd "C-`") 'winum-select-window-by-number)
+          (define-key map (kbd "C-²") 'winum-select-window-by-number)
+          (define-key map (kbd "M-0") 'winum-select-window-0-or-10)
+          (define-key map (kbd "M-1") 'winum-select-window-1)
+          (define-key map (kbd "M-2") 'winum-select-window-2)
+          (define-key map (kbd "M-3") 'winum-select-window-3)
+          (define-key map (kbd "M-4") 'winum-select-window-4)
+          (define-key map (kbd "M-5") 'winum-select-window-5)
+          (define-key map (kbd "M-6") 'winum-select-window-6)
+          (define-key map (kbd "M-7") 'winum-select-window-7)
+          (define-key map (kbd "M-8") 'winum-select-window-8)
+          map))
+  (require 'winum)
+  (winum-mode))
+(add-to-list 'jse-pkg-init-funs #'jse-init/winum)
 
 (provide 'jse-ui)
 ;;; jse-ui.el ends here
