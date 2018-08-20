@@ -45,8 +45,6 @@
 (defgroup jse-emacs nil "Customizations of my emacs configuration")
 
 (add-to-list 'load-path jse-config-el-dir)
-(defvar jse-pkg-init-funs '())
-(defvar jse-pkg-keybindings '())
 (defvar jse-init-el-start-time (current-time) "Time when init.el was started")
 ;;
 ;; Emacs core configuration
@@ -141,11 +139,6 @@ Note the weekly scope of the command's precision.")
 (add-hook 'after-save-hook 'jse-tangle-config-org-hook-func)
 
 (message "→★ finished loading config files after %.2fs" (float-time (time-subtract (current-time) jse-init-el-start-time)))
-(dolist (init-fn jse-pkg-init-funs)
-  (funcall init-fn))
-(message "→★ finished loading packages after %.2fs" (float-time (time-subtract (current-time) jse-init-el-start-time)))
-(dolist (init-fn jse-pkg-keybindings)
-  (funcall init-fn))
 
 (message "→★ loaded init.el in %.2fs" (float-time (time-subtract (current-time) jse-init-el-start-time)))
 

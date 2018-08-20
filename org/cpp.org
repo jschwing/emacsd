@@ -4,17 +4,14 @@
 
 * Clang-format
   #+BEGIN_SRC emacs-lisp
-(straight-use-package 'clang-format)
-(defun jse-init/clang-format()
-  (require 'clang-format)
-  (defun jse-cpp-clang-format-bindings ()
+  (defun jse-cpp-clang-format-hook()
     (display-line-numbers-mode 1)
     (define-key c++-mode-map [tab] 'clang-format-region)
     (define-key c++-mode-map [?\t] 'clang-format-region))
-  (add-hook 'c++-mode-hook 'jse-cpp-clang-format-bindings))
-(add-to-list 'jse-pkg-init-funs #'jse-init/clang-format)
+  (use-package clang-format
+    :defer t
+    :hook (c++-mode-hook . jse-cpp-clang-format-bindings))
   #+END_SRC
-
 * Downcase local variables
   #+BEGIN_SRC emacs-lisp
 (defun down-case-local-variables ()

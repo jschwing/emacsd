@@ -1,21 +1,19 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/cpp.org' instead ...
-;; Auto-generated at Fri Aug 17 2018-08-17 14:08:00
+;; Auto-generated at Sat Aug 18 2018-08-18 14:17:16
 ;; ============================================================
 
 
 ;; #####################################################################################
 (message "config • Clang-format …")
 
-(straight-use-package 'clang-format)
-(defun jse-init/clang-format()
-  (require 'clang-format)
-  (defun jse-cpp-clang-format-bindings ()
+  (defun jse-cpp-clang-format-hook()
     (display-line-numbers-mode 1)
     (define-key c++-mode-map [tab] 'clang-format-region)
     (define-key c++-mode-map [?\t] 'clang-format-region))
-  (add-hook 'c++-mode-hook 'jse-cpp-clang-format-bindings))
-(add-to-list 'jse-pkg-init-funs #'jse-init/clang-format)
+  (use-package clang-format
+    :defer t
+    :hook (c++-mode-hook . jse-cpp-clang-format-bindings))
 
 
 ;; #####################################################################################

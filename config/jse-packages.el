@@ -1,60 +1,96 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/packages.org' instead ...
-;; Auto-generated at Fri Aug 17 2018-08-17 13:50:41
+;; Auto-generated at Sat Aug 18 2018-08-18 21:41:15
 ;; ============================================================
 
 
 ;; #####################################################################################
-(message "config • Package Manager …")
+(message "config • Use-Package …")
 
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+(setq package-enable-at-startup nil)
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+(package-initialize)
+(eval-when-compile
+  (require 'use-package))
+(setq use-package-always-ensure t) 
+(use-package diminish
+:ensure t
+:defer t)
+(use-package delight
+:ensure t
+:defer t)
+
+
+;; #####################################################################################
+(message "config • Auto-update …")
+
+(use-package auto-package-update
+  :ensure t
+    :defer t
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
 
 
 ;; #####################################################################################
 (message "config • WhichKey …")
 
-(straight-use-package 'which-key)
-(defun jse-init/which-key()
-  (require 'which-key)
-  (which-key-mode))  ; Enable which-key-mode
-(add-to-list 'jse-pkg-init-funs #'jse-init/which-key)
+(use-package which-key
+:defer t
+:ensure t
+:config (which-key-mode))
 
 
 ;; #####################################################################################
 (message "config • FZF …")
 
-(straight-use-package 'fzf)
-(defun jse-init/fzf()
-  (require 'fzf))
-(defun jse-add-keys/fzf()
-  (global-set-key (kbd "C-x C-r") 'fzf-git))
-(add-to-list 'jse-pkg-init-funs #'jse-init/fzf)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/fzf)
+(use-package fzf
+:defer t
+:ensure t
+:bind ("C-x C-r" . 'fzf-git))
+
+
+;; #####################################################################################
+(message "config • Color MOccur …")
+
+(use-package color-moccur
+  :ensure t
+  :defer t
+    :commands (isearch-moccur isearch-all)
+  :bind (("M-s O" . moccur)
+         :map isearch-mode-map
+         ("M-o" . isearch-moccur)
+         ("M-O" . isearch-moccur-all))
+  :init
+  (setq isearch-lazy-highlight t)
+  :config
+  (use-package moccur-edit))
 
 
 ;; #####################################################################################
 (message "config • Helm …")
 
-(straight-use-package 'helm)
-(defun jse-init/helm()
-  (require 'helm)
-  (helm-mode 1))
-(defun jse-add-keys/helm()
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-s") 'helm-occur))
-(add-to-list 'jse-pkg-init-funs #'jse-init/helm)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/helm)
+(use-package helm
+  :ensure t
+    :bind (("M-x" . helm-M-x)))
+
+
+;; #####################################################################################
+(message "config • PDF Tools …")
+
+(use-package pdf-tools
+  :load-path "site-lisp/pdf-tools/lisp"
+  :magic ("%PDF" . pdf-view-mode)
+  :ensure t
+  :defer t
+  :config
+  (pdf-tools-install))
 
 (provide 'jse-packages)
 ;;; jse-packages.el ends here

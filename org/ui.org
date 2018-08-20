@@ -1,9 +1,8 @@
-#+TITLE: Keybindings
+#+TITLE: UI
 #+STARTUP: indent
 #+TODO: (a) | DISABLED(d)
 
-* UI Sugar
-** Font
+* Font
 Setup Iosevka ligatures
 #+BEGIN_SRC emacs-lisp :tangle no
 (setq prettify-symbols-unprettify-at-point 'right-edge)
@@ -290,7 +289,7 @@ Add customization option for font
   :type '(cons string (plist :key-type (choice (const :size) (const :weight) (const :style) (const :width)) :value-type sexp))
   :set 'jse-set-font)
 #+END_SRC
-** Themes
+* Themes
 #+BEGIN_SRC emacs-lisp
 (defun jse-install-or-load-package (pkg)
   (unless (require pkg nil 'noerror)
@@ -320,22 +319,22 @@ Add customization option for font
   :type 'string
   :set 'jse-cust-load-theme)
 #+END_SRC
-** Packages
-Spaceline (Nice modeline)
+* Spaceline (Nice modeline)
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'spaceline)
-(defun jse-init/spaceline()
+(use-package spaceline
+  :defer t
+  :ensure t
+  :config 
   (require 'spaceline-config)
-  (spaceline-spacemacs-theme)
   (setq winum-auto-setup-mode-line nil))
-(add-to-list 'jse-pkg-init-funs #'jse-init/spaceline)
+(spaceline-spacemacs-theme)
 #+END_SRC
 
-Winum (Select windows by numbers)
+* Winum (Select windows by numbers)
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'winum)
-(defun jse-init/winum()
-  (setq winum-keymap
+(use-package winum
+:defer t
+:init (setq winum-keymap
         (let ((map (make-sparse-keymap)))
           (define-key map (kbd "C-`") 'winum-select-window-by-number)
           (define-key map (kbd "C-²") 'winum-select-window-by-number)
@@ -349,7 +348,10 @@ Winum (Select windows by numbers)
           (define-key map (kbd "M-7") 'winum-select-window-7)
           (define-key map (kbd "M-8") 'winum-select-window-8)
           map))
-  (require 'winum)
-  (winum-mode))
-(add-to-list 'jse-pkg-init-funs #'jse-init/winum)
+:config (winum-mode))
+#+END_SRC
+* Maximize Emacs on startup (on Mac)
+#+BEGIN_SRC emacs-lisp
+(when (eq system-type 'darwin)
+(toggle-frame-maximized))
 #+END_SRC

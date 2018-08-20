@@ -1,6 +1,6 @@
 ;; ============================================================
 ;; Don't edit this file, edit 'org/ui.org' instead ...
-;; Auto-generated at Fri Aug 17 2018-08-17 13:01:44
+;; Auto-generated at Sat Aug 18 2018-08-18 21:51:17
 ;; ============================================================
 
 
@@ -61,17 +61,23 @@
 
 
 ;; #####################################################################################
-(message "config • Packages …")
+(message "config • Spaceline (Nice modeline) …")
 
-(straight-use-package 'spaceline)
-(defun jse-init/spaceline()
+(use-package spaceline
+  :defer t
+  :ensure t
+  :config 
   (require 'spaceline-config)
-  (spaceline-spacemacs-theme)
   (setq winum-auto-setup-mode-line nil))
-(add-to-list 'jse-pkg-init-funs #'jse-init/spaceline)
-(straight-use-package 'winum)
-(defun jse-init/winum()
-  (setq winum-keymap
+(spaceline-spacemacs-theme)
+
+
+;; #####################################################################################
+(message "config • Winum (Select windows by numbers) …")
+
+(use-package winum
+:defer t
+:init (setq winum-keymap
         (let ((map (make-sparse-keymap)))
           (define-key map (kbd "C-`") 'winum-select-window-by-number)
           (define-key map (kbd "C-²") 'winum-select-window-by-number)
@@ -85,9 +91,14 @@
           (define-key map (kbd "M-7") 'winum-select-window-7)
           (define-key map (kbd "M-8") 'winum-select-window-8)
           map))
-  (require 'winum)
-  (winum-mode))
-(add-to-list 'jse-pkg-init-funs #'jse-init/winum)
+:config (winum-mode))
+
+
+;; #####################################################################################
+(message "config • Maximize Emacs on startup (on Mac) …")
+
+(when (eq system-type 'darwin)
+(toggle-frame-maximized))
 
 (provide 'jse-ui)
 ;;; jse-ui.el ends here

@@ -2,7 +2,7 @@
 #+STARTUP: indent
 #+TODO: (a) | DISABLED(d)
 
-* Package Manager
+* DISABLED Straight
 #+BEGIN_SRC emacs-lisp
 (defvar bootstrap-version)
 (let ((bootstrap-file
@@ -16,91 +16,84 @@
       (goto-char (point-max))
       (eval-print-last-sexp)))
   (load bootstrap-file nil 'nomessage))
+(straight-use-package 'use-package)
+(setq straight-use-package-by-default t)
 #+END_SRC
-
+* Use-Package
+#+BEGIN_SRC emacs-lisp
+(setq package-enable-at-startup nil)
+(require 'package)
+(let* ((no-ssl (and (memq system-type '(windows-nt ms-dos))
+                    (not (gnutls-available-p))))
+       (proto (if no-ssl "http" "https")))
+  ;; Comment/uncomment these two lines to enable/disable MELPA and MELPA Stable as desired
+  (add-to-list 'package-archives (cons "melpa" (concat proto "://melpa.org/packages/")) t))
+(package-initialize)
+(eval-when-compile
+  (require 'use-package))
+(setq use-package-always-ensure t) 
+(use-package diminish
+:ensure t
+:defer t)
+(use-package delight
+:ensure t
+:defer t)
+#+END_SRC
+* Auto-update
+#+BEGIN_SRC emacs-lisp
+(use-package auto-package-update
+  :ensure t
+    :defer t
+  :config
+  (setq auto-package-update-delete-old-versions t)
+  (setq auto-package-update-hide-results t)
+  (auto-package-update-maybe))
+#+END_SRC
 * WhichKey
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'which-key)
-(defun jse-init/which-key()
-  (require 'which-key)
-  (which-key-mode))  ; Enable which-key-mode
-(add-to-list 'jse-pkg-init-funs #'jse-init/which-key)
+(use-package which-key
+:defer t
+:ensure t
+:config (which-key-mode))
 #+END_SRC
 
 * FZF
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'fzf)
-(defun jse-init/fzf()
-  (require 'fzf))
-(defun jse-add-keys/fzf()
-  (global-set-key (kbd "C-x C-r") 'fzf-git))
-(add-to-list 'jse-pkg-init-funs #'jse-init/fzf)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/fzf)
+(use-package fzf
+:defer t
+:ensure t
+:bind ("C-x C-r" . 'fzf-git))
 #+END_SRC
 
-* DISABLED IDO + SMEX
-CLOSED: [2018-08-17 Fri 13:09]
+* Color MOccur
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'ido)
-(straight-use-package 'ido-completing-read+)
-(straight-use-package 'smex)
-(defun jse-init/ido()
-  (require 'ido)
-  (require 'smex)
-  (require 'ido-completing-read+)
-  (ido-mode t)
-  (ido-everywhere 1)
-  (ido-ubiquitous-mode 1)
-  (smex-initialize))
-(defun jse-add-keys/ido()
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands)
-  ;; This is your old M-x.
-  (global-set-key (kbd "C-c C-c M-x") 'execute-extended-command))
-(add-to-list 'jse-pkg-init-funs #'jse-init/ido)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/ido)
+(use-package color-moccur
+  :ensure t
+  :defer t
+    :commands (isearch-moccur isearch-all)
+  :bind (("M-s O" . moccur)
+         :map isearch-mode-map
+         ("M-o" . isearch-moccur)
+         ("M-O" . isearch-moccur-all))
+  :init
+  (setq isearch-lazy-highlight t)
+  :config
+  (use-package moccur-edit))
 #+END_SRC
-* DISABLED Ivy + Counsel + Swiper
-CLOSED: [2018-08-17 Fri 13:25]
+* Helm
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'ivy)
-(straight-use-package 'swiper)
-(straight-use-package 'counsel)
-(defun jse-init/ivy()
-  (require 'ivy)
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-count-format "(%d/%d) ")
-  (eval-after-load 'counsel
-    '(define-key counsel-find-file-map (kbd "$") 'counsel-expand-env)))
-(defun jse-add-keys/ivy()
-  (global-set-key (kbd "C-s") 'swiper)
-  (global-set-key (kbd "M-x") 'counsel-M-x)
-  (global-set-key (kbd "C-x C-f") 'counsel-find-file)
-  (global-set-key (kbd "<f1> f") 'counsel-describe-function)
-  (global-set-key (kbd "<f1> v") 'counsel-describe-variable)
-  (global-set-key (kbd "<f1> l") 'counsel-find-library)
-  (global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
-  (global-set-key (kbd "<f2> u") 'counsel-unicode-char)
-  (global-set-key (kbd "C-c g") 'counsel-git)
-  (global-set-key (kbd "C-c j") 'counsel-git-grep)
-  (global-set-key (kbd "C-c k") 'counsel-ag)
-  (global-set-key (kbd "C-x l") 'counsel-locate)
-  (global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
-  (global-set-key (kbd "C-c C-r") 'ivy-resume)
-  (define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history))
-(add-to-list 'jse-pkg-init-funs #'jse-init/ivy)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/ivy)
+(use-package helm
+  :ensure t
+    :bind (("M-x" . helm-M-x)))
 #+END_SRC
-** Helm
+
+* PDF Tools
 #+BEGIN_SRC emacs-lisp
-(straight-use-package 'helm)
-(defun jse-init/helm()
-  (require 'helm)
-  (helm-mode 1))
-(defun jse-add-keys/helm()
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (global-set-key (kbd "C-s") 'helm-occur))
-(add-to-list 'jse-pkg-init-funs #'jse-init/helm)
-(add-to-list 'jse-pkg-keybindings #'jse-add-keys/helm)
+(use-package pdf-tools
+  :load-path "site-lisp/pdf-tools/lisp"
+  :magic ("%PDF" . pdf-view-mode)
+  :ensure t
+  :defer t
+  :config
+  (pdf-tools-install))
 #+END_SRC
